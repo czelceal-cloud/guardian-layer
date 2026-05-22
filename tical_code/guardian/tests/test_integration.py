@@ -16,11 +16,15 @@ class Test(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(self.msgs), before)
     async def test_parallel_queued(self):
         self.g.ai_signal_collector.task_started("coding")
-        for _ in range(3): self.g.ai_signal_collector.record_tool_call("read_file")
+        self.g.ai_signal_collector.record_tool_call("bash")
+        self.g.ai_signal_collector.record_tool_call("web_fetch")
+        self.g.ai_signal_collector.record_tokens(20)
         self.assertEqual(self.g.evaluate_instruction(NewInstruction(content="顺便查天气")).action, "queue")
     async def test_hurry_rejected(self):
         self.g.ai_signal_collector.task_started("coding")
-        for _ in range(3): self.g.ai_signal_collector.record_tool_call("bash")
+        self.g.ai_signal_collector.record_tool_call("bash")
+        self.g.ai_signal_collector.record_tool_call("file_read")
+        self.g.ai_signal_collector.record_tokens(10)
         self.assertEqual(self.g.evaluate_instruction(NewInstruction(content="快点")).action, "reject")
 
 if __name__ == "__main__":

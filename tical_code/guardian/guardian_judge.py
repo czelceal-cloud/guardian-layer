@@ -49,12 +49,12 @@ class GuardianJudge:
             return self._make_verdict(action, conf, reason, request, evidence, cd)
         if s in cfg.protect_states:
             if request is None:
-                return self._make_verdict("protect", conf, f"{s} - no intervention", request, evidence, cd=cfg.cooldown_default_minutes, overruled=False)
+                return self._make_verdict("protect", conf, f"{s} - no intervention", request, evidence, cooldown=cfg.cooldown_default_minutes, overruled=False)
             urgency = request.urgency
             if urgency >= 0.8 and conf < 0.5:
-                return self._make_verdict("notify", conf, f"Urgent but {s} low conf", request, evidence, cd=cfg.cooldown_default_minutes, overruled=True)
-            return self._make_verdict("protect", conf, f"{s} protected", request, evidence, cd=cfg.cooldown_default_minutes, overruled=(urgency > 0))
-        return self._make_verdict("notify", conf, "Unknown state", request, evidence, cd=cfg.cooldown_default_minutes)
+                return self._make_verdict("notify", conf, f"Urgent but {s} low conf", request, evidence, cooldown=cfg.cooldown_default_minutes, overruled=True)
+            return self._make_verdict("protect", conf, f"{s} protected", request, evidence, cooldown=cfg.cooldown_default_minutes, overruled=(urgency > 0))
+        return self._make_verdict("notify", conf, "Unknown state", request, evidence, cooldown=cfg.cooldown_default_minutes)
     def _make_verdict(self, action, confidence, reason, request, evidence, cooldown, overruled=False):
         self._cooldown.record(action)
         return GuardianVerdict(action=action, target="human", confidence=confidence, reason=reason,

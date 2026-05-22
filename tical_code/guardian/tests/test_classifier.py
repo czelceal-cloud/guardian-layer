@@ -1,5 +1,6 @@
-"""Test state classifier (from ZIP)"""
+"""Test state classifier"""
 import time, unittest, sys, os
+from unittest.mock import patch
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../.."))
 from tical_code.guardian.state_classifier import StateClassifier, ClassifierConfig
 from tical_code.guardian.signal_collector import CombinedSignal, InteractionSignal, PhysioSignal
@@ -26,7 +27,7 @@ class TestInspiration(unittest.TestCase):
         self.assertEqual(r.state, "INSPIRATION")
 
 class TestRest(unittest.TestCase):
-    @unittest.mock.patch("tical_code.guardian.state_classifier.StateClassifier._looks_like_rest_time", return_value=True)
+    @patch("tical_code.guardian.state_classifier.StateClassifier._looks_like_rest_time", return_value=True)
     def test_rest_hours(self, _):
         r = StateClassifier().classify(_sig(seconds_ago=1500, var=1), [])
         self.assertEqual(r.state, "REST")

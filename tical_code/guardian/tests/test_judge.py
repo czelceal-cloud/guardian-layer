@@ -5,7 +5,7 @@ from tical_code.guardian.guardian_judge import GuardianJudge, InterventionReques
 from tical_code.guardian.state_classifier import StateResult
 
 def _req(u=0.3): return InterventionRequest(requester="test", reason="test", urgency=u, proposed_action="test")
-def _state(s, c=0.7, d=10): return StateResult(state=s, confidence=c, evidence=[], duration_minutes=d)
+def _state(s, c=0.7, dur=10): return StateResult(state=s, confidence=c, evidence=[], duration_minutes=dur)
 
 class TestJudgeFatigue(unittest.TestCase):
     def setUp(self): self.j = GuardianJudge()
