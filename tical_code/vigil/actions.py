@@ -2,14 +2,14 @@
 import asyncio, smtplib, time
 from email.mime.text import MIMEText
 from typing import Callable, Awaitable, Optional
-from .guardian_judge import GuardianVerdict
-from .guardian_config import GuardianCoreConfig
+from .vigil_judge import VigilVerdict
+from .vigil_config import VigilCoreConfig
 
 MessageSender = Callable[[str], Awaitable[None]]
 
-class GuardianActions:
+class VigilActions:
     def __init__(self, config=None, send_message=None, smtp_config=None):
-        self._cfg = config or GuardianCoreConfig()
+        self._cfg = config or VigilCoreConfig()
         self._send = send_message or self._noop_sender
         self._smtp = smtp_config or {}
         self._pending_ack_traces = {}

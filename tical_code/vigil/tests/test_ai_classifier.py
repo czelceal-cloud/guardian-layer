@@ -1,8 +1,8 @@
 """Test AIStateClassifier"""
 import time, unittest, sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../.."))
-from tical_code.guardian.ai_state_classifier import AIStateClassifier
-from tical_code.guardian.ai_signal_collector import AISignal
+from tical_code.vigil.ai_state_classifier import AIStateClassifier
+from tical_code.vigil.ai_signal_collector import AISignal
 
 def _s(task="coding", dur=30, calls=0, reps=0, rate=0.0, length=0, unfinished=True, ago=5):
     return AISignal(current_task_type=task, task_duration_seconds=dur, tool_call_count=calls,

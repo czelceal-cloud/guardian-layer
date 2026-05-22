@@ -3,7 +3,7 @@ import time, datetime
 from dataclasses import dataclass, field
 from typing import List, Optional
 from .signal_collector import CombinedSignal, InteractionSignal, PhysioSignal
-from .guardian_config import ClassifierConfig
+from .vigil_config import ClassifierConfig
 
 @dataclass
 class StateResult:

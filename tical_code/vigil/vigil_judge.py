@@ -3,15 +3,15 @@ import time
 from dataclasses import dataclass, field
 from typing import List, Optional
 from .state_classifier import StateResult
-from .ai_interrupt_evaluator import AIInterruptEvaluator, NewInstruction, InterruptVerdict
-from .guardian_config import GuardianCoreConfig
+from .interrupt_evaluator import AIInterruptEvaluator, NewInstruction, InterruptVerdict
+from .vigil_config import VigilCoreConfig
 
 @dataclass
 class InterventionRequest:
     requester: str; reason: str; urgency: float; proposed_action: str; timestamp: float = field(default_factory=time.time)
 
 @dataclass
-class GuardianVerdict:
+class VigilVerdict:
     action: str; target: str; confidence: float; reason: str; overruled_request: bool
     evidence: List[str]; cooldown_minutes: float; timestamp: float = field(default_factory=time.time)
 
@@ -20,9 +20,9 @@ class _CooldownTracker:
     def is_cooling(self, action, cooldown_minutes): return (time.time() - self._last.get(action, 0.0)) < cooldown_minutes * 60
     def record(self, action): self._last[action] = time.time()
 
-class GuardianJudge:
+class VigilJudge:
     def __init__(self, config=None, ai_evaluator=None):
-        self._cfg = config or GuardianCoreConfig()
+        self._cfg = config or VigilCoreConfig()
         self._ai_evaluator = ai_evaluator or AIInterruptEvaluator()
         self._cooldown = _CooldownTracker()
     def evaluate_intervention(self, request, state):
@@ -57,5 +57,5 @@ class GuardianJudge:
         return self._make_verdict("notify", conf, "Unknown state", request, evidence, cooldown=cfg.cooldown_default_minutes)
     def _make_verdict(self, action, confidence, reason, request, evidence, cooldown, overruled=False):
         self._cooldown.record(action)
-        return GuardianVerdict(action=action, target="human", confidence=confidence, reason=reason,
+        return VigilVerdict(action=action, target="human", confidence=confidence, reason=reason,
             overruled_request=overruled, evidence=evidence, cooldown_minutes=cooldown)

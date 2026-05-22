@@ -1,15 +1,15 @@
 """Integration test"""
 import asyncio, unittest, sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../.."))
-from tical_code.guardian import build_guardian, NewInstruction
+from tical_code.vigil import build_vigil, NewInstruction
 from unittest.mock import MagicMock
-from tical_code.guardian.state_classifier import StateResult
+from tical_code.vigil.state_classifier import StateResult
 
 class Test(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         self.msgs = []
         async def cap(t): self.msgs.append(t)
-        self.g = build_guardian(send_message=cap)
+        self.g = build_vigil(send_message=cap)
     async def test_patrol_focus_protect(self):
         self.g.state_classifier.classify = MagicMock(return_value=StateResult("FOCUS", 0.85, ["steady"], 15))
         before = len(self.msgs); await self.g.patrol()

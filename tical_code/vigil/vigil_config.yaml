@@ -1,4 +1,3 @@
-# Guardian Layer Configuration
 signal:
   interaction:
     sample_window_minutes: 30
@@ -9,14 +8,12 @@ signal:
     hrv_normal_range: [20.0, 100.0]
     hr_normal_range: [50.0, 100.0]
     spo2_threshold: 94.0
-
 classifier:
   fatigue_work_hours: 4.0
   focus_max_hours: 2.0
   rest_max_hours: 8.0
   distress_no_signal_gap: 30
-
-guardian:
+vigil:
   protect_states: ["FOCUS", "INSPIRATION", "REST"]
   patrol_interval_minutes: 5
   cooldown_default_minutes: 30

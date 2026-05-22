@@ -1,21 +1,21 @@
-"""Guardian Layer — AI Safety Runtime for tical-code.
-Public API: build_guardian(), Guardian.patrol(), Guardian.evaluate_instruction()
+"""Vigil — Quiet watcher for tical-code.
+Public API: build_vigil(), Vigil.patrol(), Vigil.evaluate_instruction()
 """
-from .guardian_config import GuardianConfig, load_config
+from .vigil_config import VigilConfig, load_config
 from .signal_collector import SignalCollector, CombinedSignal, InteractionSignal, PhysioSignal
 from .ai_signal_collector import AISignalCollector, AISignal
 from .state_classifier import StateClassifier, StateResult, StateRecord
 from .ai_state_classifier import AIStateClassifier, AIStateResult
-from .guardian_judge import GuardianJudge, GuardianVerdict, InterventionRequest
-from .ai_interrupt_evaluator import AIInterruptEvaluator, NewInstruction, InterruptVerdict
+from .vigil_judge import VigilJudge, VigilVerdict, InterventionRequest
+from .interrupt_evaluator import AIInterruptEvaluator, NewInstruction, InterruptVerdict
 from .instruction_queue import InstructionQueue, QueuedInstruction
-from .decision_trace import DecisionTrace, GuardianTrace
-from .actions import GuardianActions
+from .trace_log import VigilTraceStore, VigilTrace
+from .actions import VigilActions
 import time
 from typing import Optional, List
 
 
-class Guardian:
+class Vigil:
     """Top-level facade — patrol() and evaluate_instruction() entry points."""
 
     def __init__(self, config=None, send_message=None, smtp_config=None, trace_log_path=None):
@@ -24,11 +24,11 @@ class Guardian:
         self.ai_signal_collector = AISignalCollector()
         self.state_classifier = StateClassifier(self.config.classifier)
         self.ai_state_classifier = AIStateClassifier()
-        self.judge = GuardianJudge(self.config.guardian)
+        self.judge = VigilJudge(self.config.guardian)
         self.ai_evaluator = AIInterruptEvaluator()
         self.instruction_queue = InstructionQueue()
-        self.trace = DecisionTrace(log_path=trace_log_path)
-        self.actions = GuardianActions(config=self.config.guardian, send_message=send_message, smtp_config=smtp_config)
+        self.trace = VigilTraceStore(log_path=trace_log_path)
+        self.actions = VigilActions(config=self.config.guardian, send_message=send_message, smtp_config=smtp_config)
         self._state_history: List[StateRecord] = []
 
     async def patrol(self) -> None:
@@ -61,20 +61,20 @@ class Guardian:
         self.trace.update_outcome(trace_id, human_response="acknowledged")
 
 
-def build_guardian(config_path=None, send_message=None, smtp_config=None):
+def build_vigil(config_path=None, send_message=None, smtp_config=None):
     config = load_config(config_path)
-    return Guardian(config=config, send_message=send_message, smtp_config=smtp_config)
+    return Vigil(config=config, send_message=send_message, smtp_config=smtp_config)
 
 
 __all__ = [
-    "Guardian", "build_guardian", "GuardianConfig", "load_config",
+    "Vigil", "build_vigil", "VigilConfig", "load_config",
     "SignalCollector", "CombinedSignal", "InteractionSignal", "PhysioSignal",
     "AISignalCollector", "AISignal",
     "StateClassifier", "StateResult", "StateRecord",
     "AIStateClassifier", "AIStateResult",
-    "GuardianJudge", "GuardianVerdict", "InterventionRequest",
+    "VigilJudge", "VigilVerdict", "InterventionRequest",
     "AIInterruptEvaluator", "NewInstruction", "InterruptVerdict",
     "InstructionQueue", "QueuedInstruction",
-    "DecisionTrace", "GuardianTrace",
-    "GuardianActions",
+    "VigilTraceStore", "VigilTrace",
+    "VigilActions",
 ]

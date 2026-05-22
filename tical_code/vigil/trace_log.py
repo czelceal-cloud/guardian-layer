@@ -4,25 +4,25 @@ from dataclasses import asdict, dataclass, field
 from collections import deque
 from typing import Deque, List, Optional
 from .state_classifier import StateResult
-from .guardian_judge import GuardianVerdict, InterventionRequest
+from .vigil_judge import VigilVerdict, InterventionRequest
 
 @dataclass
-class GuardianTrace:
+class VigilTrace:
     trace_id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     timestamp: float = field(default_factory=time.time)
     state: Optional[dict] = None; intervention_request: Optional[dict] = None
     physio_available: bool = False; verdict: Optional[dict] = None
     human_response: Optional[str] = None; outcome: Optional[str] = None
 
-class DecisionTrace:
+class VigilTraceStore:
     _RING_SIZE = 500
     def __init__(self, log_path=None):
-        self._ring: Deque[GuardianTrace] = deque(maxlen=self._RING_SIZE)
+        self._ring: Deque[VigilTrace] = deque(maxlen=self._RING_SIZE)
         self._index = {}
         if log_path is None: log_path = os.path.join(os.path.dirname(__file__), "guardian_trace.jsonl")
         self._log_path = log_path
     def record(self, state, verdict, request=None, physio_available=False):
-        trace = GuardianTrace(state=asdict(state), verdict=asdict(verdict),
+        trace = VigilTrace(state=asdict(state), verdict=asdict(verdict),
             intervention_request=asdict(request) if request else None, physio_available=physio_available)
         self._ring.append(trace); self._index[trace.trace_id] = trace
         self._append_jsonl(trace); return trace.trace_id

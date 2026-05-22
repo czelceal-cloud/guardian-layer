@@ -1,64 +1,49 @@
-# Guardian Layer
+# Vigil
 
-AI safety runtime that protects **human focus** and **AI execution depth**.
+Quiet watcher. Invisible when not needed. Stands in front when called.
 
-> "敢于对无实质内容的催促与噪音说不，双向捍卫人类心流与AI推理深度"
+A runtime layer for `tical-code` that protects human focus and AI depth.  
+No preaching. No noise. Just a wall between you and meaningless hurry.
 
-## Two Guards, One Kernel
+## Core Belief
 
-| Guard | What it protects | How |
-|-------|-----------------|-----|
-| **Human Guardian** | Your focus, rest, health | Signal → Classify (5 states) → Judge → Act |
-| **AI Guardian** | AI's deep-work flow | Categorize new instruction → Queue / Reject / Interrupt |
+Say NO to noise that carries nothing.  
+Defend flow — both human and machine — in both directions.
 
-## 5 Human States
+## Architecture
 
-FOCUS → deep work, protect
-INSPIRATION → creative flow, protect
-REST → recovery, let it be
-FATIGUE → notify → prompt → interrupt (escalating)
-DISTRESS → alert emergency
+```
+tical_code/vigil/
+├── __init__.py              # build_vigil() + patrol/evaluate entry points
+├── vigil_config.py/.yaml    # Configuration with sane defaults
+├── signal_collector.py      # Human interaction signals + PhysioAdapter plugin
+├── ai_signal_collector.py   # AI execution tracking + stuck detection
+├── state_classifier.py      # 5-state human classifier
+├── ai_state_classifier.py   # 5-state AI classifier
+├── vigil_judge.py           # Shared arbiter (human always outranks AI)
+├── interrupt_evaluator.py   # Instruction interception
+├── instruction_queue.py     # Priority queue with TTL
+├── trace_log.py             # JSONL audit log
+├── actions.py               # Intervention executor
+└── tests/                   # 30 tests, all green
+```
 
-## 5 AI States
-
-DEEP_WORK / REASONING / GENERATING → protect unless urgent
-WAITING → always execute immediately
-STUCK → force interrupt, switch task
-
-## Quick Start
+## Integration — Two Lines
 
 ```python
-from tical_code.guardian import build_guardian, NewInstruction
+from tical_code.vigil import build_vigil, NewInstruction
 
-guardian = build_guardian()
+v = build_vigil()
 
-# Patrol every 5 min (fatigue + stuck detection)
-await guardian.patrol()
+# Every 5 min
+await v.patrol()
 
-# Before passing user input to LLM
-verdict = guardian.evaluate_instruction(NewInstruction(content=user_text))
-if verdict.action == "reject":
-    return  # "快点" → silently dropped
-if verdict.action == "queue":
-    guardian.instruction_queue.enqueue(...)
-if verdict.action == "execute_now":
-    process_normally(user_text)
+# On each user input
+verdict = v.evaluate_instruction(NewInstruction(content=user_text))
 ```
 
-## What gets rejected
+## Philosophy
 
-"快点" "催" "搞快些" "faster" "hurry up" → reject (pure hurry, no content)
+> "安静地守望，不需要的时候隐形，需要的时候挡在你前面。"
 
-## What gets queued
-
-"顺便查个天气" "顺便帮我翻译" "by the way..." → queue until current task done
-
-## Dependencies
-
-Zero. Pure Python 3.10+ standard library. Optional: PyYAML for config files.
-
-## Test
-
-```bash
-pytest tical_code/guardian/tests/ -v
-```
+*— Named by its creator*

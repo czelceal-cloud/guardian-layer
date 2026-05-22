@@ -2,8 +2,8 @@
 import time, unittest, sys, os
 from unittest.mock import patch
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../.."))
-from tical_code.guardian.state_classifier import StateClassifier, ClassifierConfig
-from tical_code.guardian.signal_collector import CombinedSignal, InteractionSignal, PhysioSignal
+from tical_code.vigil.state_classifier import StateClassifier, ClassifierConfig
+from tical_code.vigil.signal_collector import CombinedSignal, InteractionSignal, PhysioSignal
 
 def _sig(seconds_ago=5, avg=10, var=2, work_hours=1, err=0.0, trend="stable", switches=0, hrv=60, hr=70, spo2=98, eda=3, physio=True):
     ia = InteractionSignal(last_input_time=time.time()-seconds_ago, input_interval_avg=avg, input_interval_variance=var,
@@ -27,7 +27,7 @@ class TestInspiration(unittest.TestCase):
         self.assertEqual(r.state, "INSPIRATION")
 
 class TestRest(unittest.TestCase):
-    @patch("tical_code.guardian.state_classifier.StateClassifier._looks_like_rest_time", return_value=True)
+    @patch("tical_code.vigil.state_classifier.StateClassifier._looks_like_rest_time", return_value=True)
     def test_rest_hours(self, _):
         r = StateClassifier().classify(_sig(seconds_ago=1500, var=1), [])
         self.assertEqual(r.state, "REST")

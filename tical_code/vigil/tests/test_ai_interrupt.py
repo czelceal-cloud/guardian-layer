@@ -1,8 +1,8 @@
 """Test AIInterruptEvaluator"""
 import unittest, sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../.."))
-from tical_code.guardian.ai_interrupt_evaluator import AIInterruptEvaluator, NewInstruction
-from tical_code.guardian.ai_state_classifier import AIStateResult
+from tical_code.vigil.interrupt_evaluator import AIInterruptEvaluator, NewInstruction
+from tical_code.vigil.ai_state_classifier import AIStateResult
 
 def _st(s, d=30): return AIStateResult(state=s, confidence=0.9, evidence=[], duration_seconds=d)
 class Test(unittest.TestCase):

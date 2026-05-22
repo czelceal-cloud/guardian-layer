@@ -34,7 +34,7 @@ class ClassifierConfig:
     distress_no_signal_gap: int = 30
 
 @dataclass
-class GuardianCoreConfig:
+class VigilCoreConfig:
     protect_states: List[str] = field(default_factory=lambda: ["FOCUS", "INSPIRATION", "REST"])
     patrol_interval_minutes: int = 5
     cooldown_default_minutes: int = 30
@@ -47,19 +47,19 @@ class GuardianCoreConfig:
     })
 
 @dataclass
-class GuardianConfig:
+class VigilConfig:
     signal: SignalConfig = field(default_factory=SignalConfig)
     classifier: ClassifierConfig = field(default_factory=ClassifierConfig)
-    guardian: GuardianCoreConfig = field(default_factory=GuardianCoreConfig)
+    guardian: VigilCoreConfig = field(default_factory=VigilCoreConfig)
 
-def load_config(path: Optional[str] = None) -> GuardianConfig:
+def load_config(path: Optional[str] = None) -> VigilConfig:
     if path is None:
-        path = os.path.join(os.path.dirname(__file__), "guardian_config.yaml")
+        path = os.path.join(os.path.dirname(__file__), "vigil_config.yaml")
     if not _HAS_YAML or not os.path.exists(path):
-        return GuardianConfig()
+        return VigilConfig()
     with open(path, encoding="utf-8") as f:
         raw = yaml.safe_load(f) or {}
-    cfg = GuardianConfig()
+    cfg = VigilConfig()
     s = raw.get("signal", {})
     ia = s.get("interaction", {})
     cfg.signal.interaction.sample_window_minutes = ia.get("sample_window_minutes", cfg.signal.interaction.sample_window_minutes)

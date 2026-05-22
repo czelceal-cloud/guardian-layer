@@ -2,7 +2,7 @@
 import time
 from dataclasses import dataclass, field
 from typing import List, Optional
-from .ai_interrupt_evaluator import NewInstruction, InterruptVerdict
+from .interrupt_evaluator import NewInstruction, InterruptVerdict
 
 @dataclass(order=True)
 class QueuedInstruction:

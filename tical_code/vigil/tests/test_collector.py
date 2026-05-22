@@ -1,7 +1,7 @@
 """Test SignalCollector"""
 import time, unittest, sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../.."))
-from tical_code.guardian.signal_collector import SignalCollector
+from tical_code.vigil.signal_collector import SignalCollector
 
 class TestSignalCollector(unittest.TestCase):
     def test_empty_returns_signal(self):
