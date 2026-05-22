@@ -1,43 +1,64 @@
-# Guardian Layer — AI Safety Runtime
+# Guardian Layer
 
-A modular guardian layer for `tical-code` that protects both human focus and AI execution depth.
+AI safety runtime that protects **human focus** and **AI execution depth**.
 
-## Architecture
+> "敢于对无实质内容的催促与噪音说不，双向捍卫人类心流与AI推理深度"
 
-```
-tical_code/guardian/
-├── __init__.py              # Guardian factory + patrol/evaluate_instruction entry points
-├── guardian_config.py/yaml  # YAML config with sane defaults
-├── signal_collector.py      # Human interaction signal collection + PhysioAdapter plugin
-├── ai_signal_collector.py   # AI execution state tracking + stuck detection
-├── state_classifier.py      # 5-state human classifier (FOCUS/INSPIRATION/REST/FATIGUE/DISTRESS)
-├── ai_state_classifier.py   # 5-state AI classifier (DEEP_WORK/REASONING/GENERATING/WAITING/STUCK)
-├── guardian_judge.py        # Shared arbiter (human guardian always outranks AI)
-├── ai_interrupt_evaluator.py # New instruction interception (urgent/hurry/redirect/parallel/general)
-├── instruction_queue.py     # Priority queue with TTL expiry
-├── decision_trace.py        # JSONL audit log + ring buffer
-├── actions.py               # Intervention executor (protect/notify/prompt/interrupt/alert)
-├── tests/                   # Unit tests (53/53 all green)
-└── integration/             # worker_loop adapter
-```
+## Two Guards, One Kernel
+
+| Guard | What it protects | How |
+|-------|-----------------|-----|
+| **Human Guardian** | Your focus, rest, health | Signal → Classify (5 states) → Judge → Act |
+| **AI Guardian** | AI's deep-work flow | Categorize new instruction → Queue / Reject / Interrupt |
+
+## 5 Human States
+
+FOCUS → deep work, protect
+INSPIRATION → creative flow, protect
+REST → recovery, let it be
+FATIGUE → notify → prompt → interrupt (escalating)
+DISTRESS → alert emergency
+
+## 5 AI States
+
+DEEP_WORK / REASONING / GENERATING → protect unless urgent
+WAITING → always execute immediately
+STUCK → force interrupt, switch task
 
 ## Quick Start
 
 ```python
-from tical_code.guardian import build_guardian
+from tical_code.guardian import build_guardian, NewInstruction
+
 guardian = build_guardian()
 
-# In worker loop, every 5 min:
+# Patrol every 5 min (fatigue + stuck detection)
 await guardian.patrol()
 
-# On each new user instruction while AI is busy:
-from tical_code.guardian import NewInstruction
+# Before passing user input to LLM
 verdict = guardian.evaluate_instruction(NewInstruction(content=user_text))
+if verdict.action == "reject":
+    return  # "快点" → silently dropped
+if verdict.action == "queue":
+    guardian.instruction_queue.enqueue(...)
+if verdict.action == "execute_now":
+    process_normally(user_text)
 ```
 
-## Core Philosophy
+## What gets rejected
 
-"Say NO to meaningless hurry and noise. Defend human flow and AI reasoning depth in both directions."
+"快点" "催" "搞快些" "faster" "hurry up" → reject (pure hurry, no content)
 
-Phase 1: Pure software branch (no wearables required)
-Phase 2: Wearable hardware integration (PhysioAdapter plugin interface ready)
+## What gets queued
+
+"顺便查个天气" "顺便帮我翻译" "by the way..." → queue until current task done
+
+## Dependencies
+
+Zero. Pure Python 3.10+ standard library. Optional: PyYAML for config files.
+
+## Test
+
+```bash
+pytest tical_code/guardian/tests/ -v
+```
